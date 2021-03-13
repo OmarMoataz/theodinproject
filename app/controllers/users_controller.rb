@@ -1,22 +1,23 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :find_user, except: [:index]
-  authorize_resource only: [:edit, :update]
+  authorize_resource only: %i[edit update]
 
   def show
-    @courses = decorated_courses
-    @projects = @user.projects_with_lesson
+    @courses = decorated_path_courses
   end
 
   def update
-    @user.update_attributes!(user_params)
+    @user.update!(user_params)
     render json: @user
   end
 
   private
 
-  def decorated_courses
-    courses.map { |course| CourseDecorator.new(course) }
+  def decorated_path_courses
+    @user.path.courses.map do |course|
+      CourseDecorator.new(course)
+    end
   end
 
   def courses
@@ -24,17 +25,16 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params
-      .require(:user)
-      .permit(
-        :email,
-        :username,
-        :password,
-        :password_confirmation,
-        :learning_goal,
-        :uid,
-        :provider,
-      )
+    params.require(:user).permit(
+      :email,
+      :username,
+      :password,
+      :password_confirmation,
+      :learning_goal,
+      :uid,
+      :provider,
+      :path_id,
+    )
   end
 
   def find_user

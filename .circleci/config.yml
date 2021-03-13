@@ -1,0 +1,77 @@
+---
+version: 2.1
+
+executors:
+  rails-executor:
+    docker:
+      - image: circleci/ruby:2.6.6-stretch-node-browsers-legacy
+        environment:
+          RAILS_ENV: test
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: password
+      - image: circleci/redis:alpine
+      - image: circleci/postgres:12.2-ram
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: theodinproject_test
+    working_directory: ~/theodinproject
+
+jobs:
+  tests:
+    executor: rails-executor
+    steps:
+      - checkout
+
+      # Install bundler
+      - run: gem install bundler
+
+      # Restore Cached Dependencies
+      - restore_cache:
+          name: Restore bundle cache
+          key: theodinproject-bundle-{{ checksum "Gemfile.lock" }}
+
+      - restore_cache:
+          name: Restore yarn cache
+          key: theodinproject-yarn-{{ checksum "yarn.lock" }}
+
+      # Bundle install dependencies
+      - run: bundle install --path vendor/bundle
+
+      # yarn install dependencies
+      - run: yarn install
+
+      # Cache Dependencies
+      - save_cache:
+          name: Store bundle cache
+          key: theodinproject-bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - save_cache:
+          name: Store yarn cache
+          key: theodinproject-yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.yarn-cache
+
+      # Wait for DB
+      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      # Setup the database
+      - run: bundle exec rake db:schema:load
+
+      # run linters
+      - run: bundle exec rubocop
+      - run: yarn run eslint
+
+      # Run JS Tests
+      - run: yarn test
+
+      # Run rspec
+      - run: bundle exec rspec
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - tests

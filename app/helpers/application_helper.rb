@@ -1,11 +1,12 @@
+# rubocop:disable Metrics/MethodLength, Layout/LineLength, Metrics/ModuleLength
 module ApplicationHelper
   require 'kramdown'
 
   def chat_link
-    'https://discord.gg/hvqVr6d'
+    'https://discord.gg/V75WSQG'
   end
 
-  def github_link(extension='')
+  def github_link(extension = '')
     "https://github.com/TheOdinProject/#{extension}"
   end
 
@@ -13,10 +14,8 @@ module ApplicationHelper
     'https://forum.theodinproject.com'
   end
 
-  def title(input=nil)
-    if input
-      content_for(:title) { input + ' | The Odin Project' }
-    end
+  def title(input = nil)
+    content_for(:title) { "#{input} | The Odin Project" } if input
   end
 
   def bootstrap_class_for(flash_type)
@@ -36,7 +35,7 @@ module ApplicationHelper
       {
         question: 'Who is The Odin Project for?',
         answer:
-          "<p>The Odin Project is for absolute beginners and those who have tried other resources without success.  In reality, The Odin Project is for anyone who wants to work as a web developer, do freelancing work, build a startup, or just hack together a homepage for yourself.  All the tools you need are here.</p>
+          "<p>The Odin Project is for absolute beginners in the world of web development and those who have tried other resources without success.  In reality, The Odin Project is for anyone who wants to work as a web developer, do freelancing work, build a startup, or just hack together a homepage for yourself.  All the tools you need are here. <strong>You should consider yourself fairly competent with personal computers and open to using a non-Windows based Operating System.</strong></p>
           <br />
           <p>We’ve built an in-depth curriculum designed to take you 100% of the way to becoming a web developer. Many other resources out there teach you just the basics of programming.  With The Odin Project you’ll create your own websites, games, and social media sites.</p>
           <br />
@@ -45,7 +44,8 @@ module ApplicationHelper
       {
         question: 'What is the goal of the The Odin Project?',
         answer:
-          '<p>The goal of The Odin Project is to provide a complete path for students to go from zero to employed as web developers while working with other students along the way.</p>'
+          '<p>The goal of The Odin Project is to provide a complete path for students to go from zero programming knowledge to employed as web developers while working with other students and picking up the skills to become self sufficient along the way.</p>'
+
       },
       {
         question: 'How long does The Odin Project take?',
@@ -57,22 +57,24 @@ module ApplicationHelper
           <p>We've essentially distilled down what you most need to learn to hit that employable level, but it's still a healthy dose of learning.  Depending how fast you learn, it will take roughly 1000 hours of work to hit that sweet spot.  If you're naturally more technical or come from a technical background, it may be a bit faster.  If you're less technical or brand new to all this, it will take longer.  Don't despair!  When you think about it, that's pretty much the same learning curve you had to climb to learn anything worthwhile so far in life.</p>"
       },
       {
-        question: 'What technologies does The Odin Project teach?',
+        question: 'Which technologies can one expect to learn from The Odin Project?',
         answer:
-          "<p>The <a href='courses/web-development-101'>Web Development 101 course</a> will give you a chance to explore several of the languages and technologies you’ll need to know on your journey to becoming a web developer.  Web Development 101 introduces HTML, CSS, Javascript, Ruby, Rails, Git, databases and more. We’ve also created mini-projects that give you a chance to test your new knowledge by building your own applications and websites!</p>
+          "<p> The Odin Project contains two main paths for students to choose from: <a href='paths/full-stack-ruby-on-rails'>Fullstack Ruby on Rails</a> and <a href='paths/full-stack-javascript'>Fullstack Javascript</a>. The Ruby on Rails path gives a general overview of what fullstack is. This is the default path for most beginners. The Javascript path focuses more on the connection between the webpage and the data with Javascript and NodeJS. The Frontend path primarily goes over HTML, CSS and Javascript but no Ruby on Rails. Below are some courses that are included in these curriculums:</p>
+          <br />
+          <p>The <a href='courses/foundations'>Foundations course</a> will give you a chance to explore several of the languages and technologies you’ll need to know on your journey to becoming a web developer. Foundations introduces HTML, CSS, Javascript, Ruby, Rails, Git, databases and more. We’ve also created mini-projects that give you a chance to test your new knowledge by building your own applications and websites!</p>
           <br />
           <p>The Odin Project takes a back-to-front approach to learning Ruby on Rails.  We start with a <a href='courses/ruby-programming'>strong foundation in Ruby</a> and an understanding of databases before migrating into <a href='courses/ruby-on-rails'>Ruby on Rails</a> (which is a framework built using Ruby).</p>
           <br />
-          <p>The Odin Project then delves deep into <a href='courses/html5-and-css3'>HTML and CSS</a>, along with <a href='courses/javascript-and-jquery'>Javascript, JQuery and Backbone</a> to give you all the tools necessary to make websites flow, load quickly, and look great.  Along the way you’ll learn Git and deployment so you can build your own portfolio, collaborate with others, and see your work on the web.</p>
+          <p>The Odin Project then delves deep into <a href='courses/html-and-css'>HTML and CSS</a>, along with <a href='courses/javascript'>Javascript</a> to give you all the tools necessary to make websites flow, load quickly, and look great.  Along the way you’ll learn Git and deployment so you can build your own portfolio, collaborate with others, and see your work on the web.</p>
           <br />
-          <p>Finally, The Odin Project will teach you to work with legacy codebases and open-source projects. We’ll also cover areas specifically intended to help when you’re <a href='courses/getting-hired'>looking for employment</a>.</p>"
+          <p>Finally, The Odin Project will provide you with opportunities to work with legacy codebases and open-source projects. We’ll also cover areas specifically intended to help when you’re <a href='courses/getting-hired'>looking for employment</a>.</p>"
       },
       {
         question: 'How is The Odin Project different from other programs?',
         answer:
           "<p>The Odin Project is different from other online programs in that it pulls the best resources from around the web and compiles them to create a complete curriculum.  In many other programs the material is formatted to meet their specific curriculum.  This means that not all of the lessons are top-notch. The Odin Project sidesteps this downfall by pulling various free resources from around the web and compiles them in one place.</p>
           <br />
-          <p>The Odin Project also develops your problem solving skills when it requires you to install programs on your local computer.  As developers, programming errors frequently arise and knowing how to decipher error messages is critical.  These problem solving skills are frequently ignored by other programs.</p>
+          <p>The Odin Project also attempts to develop your problem solving skills when it requires you to install programs on your local computer.  As developers, programming errors frequently arise and knowing how to decipher error messages is critical.  These problem solving skills are frequently ignored by other programs.</p>
           <br />
           <p>Lastly, The Odin Project is project based.  Other programs require you to simply input the correct answer. It is difficult to retain any knowledge by learning the bare minimum syntax. The Odin Project is designed with projects built from the ground up giving you real-world experience that you can use to build your portfolio and get hired as a web developer!</p>"
       },
@@ -110,19 +112,19 @@ module ApplicationHelper
       {
         question: 'Do you have a Code of Conduct?',
         answer:
-          "Yes!  While interacting with other Odinites you agree to the following:<br />" + Kramdown::Document.new(File.read('doc/code_of_conduct.md')).to_html
-        },
+          "Yes!  While interacting with other Odinites you agree to the following:<br /> #{Kramdown::Document.new(File.read('doc/code_of_conduct.md')).to_html}"
+      },
       {
         question: 'Can I use this curriculum to teach?',
         answer:
           "<p>The Odin Project is licensed under two pieces: the curriculum and the main website.  The main website is a fully open-source project <a href='https://github.com/TheOdinProject/theodinproject/blob/master/license.txt'>under an MIT license</a>, so you can use the code for whatever you want.  The curriculum is currently licensed under a <a href='https://github.com/TheOdinProject/curriculum/blob/master/license.md'>Creative Commons license</a> which restricts it to noncommercial use without prior authorization.</p>
           <br />
-          <p>This means you can use The Odin Project’s curriculum to teach at your club, meetup, or with your friends (In fact, we’d love it if you did that and told us how it went!). You can’t, however, use it to start a bootcamp without having a conversation first.  Please reach out with any questions to <a href='mailto: contact@theodinproject.com'>contact@theodinproject.com</a></p>"
+          <p>This means you can use The Odin Project’s curriculum to teach at your club, meetup, or with your friends (In fact, we’d love it if you did that and told us how it went!). You can’t, however, use it to start a bootcamp without having a conversation first.  Please reach out with any questions to <a href='mailto: theodinprojectcontact@gmail.com'>theodinprojectcontact@gmail.com</a></p>"
       },
       {
         question: 'How can I get in touch?',
         answer:
-        "<p>If you have questions about The Odin Project itself, feel free to <a href='mailto:contact@theodinproject.com'>contact us</a>.  There is also a friendly Odin community in our <a target='_blank' rel='noreferrer' href=#{chat_link}>Discord chat rooms</a></p>"
+        "<p>If you have questions about The Odin Project itself, feel free to <a href='mailto:theodinprojectcontact@gmail.com'>contact us</a>.  There is also a friendly Odin community in our <a target='_blank' rel='noreferrer' href=#{chat_link}>Discord chat rooms.</a></p>"
       }
     ]
   end
@@ -152,32 +154,50 @@ module ApplicationHelper
       {
         badge_image_url: 'badge-html-css.svg',
         badge_alt_text: 'html css badge',
-        title: 'HTML + CSS'
+        title: 'HTML + CSS',
+        path: '/courses/html-and-css'
       },
       {
         badge_image_url: 'badge-javascript.svg',
         badge_alt_text: 'javascript badge',
-        title: 'JavaScript'
+        title: 'JavaScript',
+        path: '/courses/javascript'
       },
-      { badge_image_url: 'badge-git.svg',
+      {
+        badge_image_url: 'badge-git.svg',
         badge_alt_text: 'git badge',
-        title: 'Git'
+        title: 'Git',
+        path: '/courses/web-development-101#git-basics'
       },
-      { badge_image_url: 'badge-database.svg',
+      {
+        badge_image_url: 'badge-database.svg',
         badge_alt_text: 'databases badge',
-        title: 'Databases'
+        title: 'Databases',
+        path: '/courses/databases'
       },
-      { badge_image_url: 'badge-ruby.svg',
+      {
+        badge_image_url: 'badge-ruby.svg',
         badge_alt_text: 'ruby badge',
-        title: 'Ruby'
+        title: 'Ruby',
+        path: '/courses/ruby-programming'
       },
-      { badge_image_url: 'badge-ruby-on-rails.svg',
+      {
+        badge_image_url: 'badge-ruby-on-rails.svg',
         badge_alt_text: 'ruby on rails badge',
-        title: 'Ruby on Rails'
+        title: 'Ruby on Rails',
+        path: '/courses/ruby-on-rails'
       },
-      { badge_image_url: 'badge-getting-hired.svg',
+      {
+        badge_image_url: 'badge-nodejs.svg',
+        badge_alt_text: 'nodejs badge',
+        title: 'NodeJS',
+        path: '/courses/nodejs'
+      },
+      {
+        badge_image_url: 'badge-getting-hired.svg',
         badge_alt_text: 'getting hired badge',
-        title: 'Getting Hired'
+        title: 'Getting Hired',
+        path: '/courses/getting-hired'
       }
     ]
   end
@@ -228,3 +248,4 @@ module ApplicationHelper
     'https://medium.com/the-odin-project'
   end
 end
+# rubocop:enable Metrics/MethodLength, Layout/LineLength, Metrics/ModuleLength

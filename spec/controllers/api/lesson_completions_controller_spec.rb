@@ -5,39 +5,45 @@ module Api
     let(:params) { { start_date: start_date, end_date: end_date } }
     let(:start_date) { '2019/01/01' }
     let(:end_date) { '2019/01/31' }
-    let!(:course) { create(:course, title: 'Web Development 101', position: 1) }
+    let!(:course) { create(:course, title: 'Foundations', position: 1) }
+
     let(:serialized_course) do
       {
-        'title' => 'Web Development 101',
+        'title' => 'Foundations',
         'sections' => [
           {
             'title' => 'Installations',
             'lessons' => [
               'title' => 'Overview',
-              'completions' => 1,
+              'completions' => 1
             ]
           }
         ]
       }
     end
+
     let(:username) { 'development' }
     let(:password) { 'qwerty123' }
+
     let(:authenticate_request) do
-      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.
-      encode_credentials(username, password)
+      allow(ENV).to receive(:fetch).with('API_USERNAME').and_return(username)
+      allow(ENV).to receive(:fetch).with('API_PASSWORD').and_return(password)
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(
+        username,
+        password
+      )
     end
+
     let(:between_dates) do
       (DateTime.parse(start_date)..DateTime.parse(end_date))
     end
 
     before do
-      allow(CourseSerializer).to receive(:as_json).with(course, between_dates).
-        and_return(serialized_course)
+      allow(CourseSerializer).to receive(:as_json).with(course, between_dates).and_return(serialized_course)
     end
 
     describe '#index' do
       context 'when authenticated' do
-
         before do
           authenticate_request
         end
@@ -53,7 +59,7 @@ module Api
         end
 
         context 'when start and end dates are not present' do
-          let(:params) { { } }
+          let(:params) { {} }
           let(:between_dates) do
             (DateTime.parse('2013/01/01')..DateTime.parse(DateTime.now.to_s))
           end
@@ -61,8 +67,7 @@ module Api
           it 'uses the default dates' do
             get :index, params: params
 
-            expect(CourseSerializer).to have_received(:as_json).
-              with(course, between_dates)
+            expect(CourseSerializer).to have_received(:as_json).with(course, between_dates)
           end
         end
       end

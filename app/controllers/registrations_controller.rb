@@ -1,5 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
   after_action :register_mailing_list, only: [:create]
+  after_action :send_welcome_email, only: [:create]
 
   protected
 
@@ -7,28 +8,25 @@ class RegistrationsController < Devise::RegistrationsController
     dashboard_path
   end
 
-  def after_inactive_sign_up_path_for(resource)
+  def after_inactive_sign_up_path_for(_resource)
     dashboard_path
-  end
-
-  def update_resource(resource, params)
-    if current_user.provider == 'github'
-      params.delete('current_password')
-      resource.update_without_password(params)
-    else
-      resource.update_with_password(params)
-    end
   end
 
   private
 
   def register_mailing_list
-    if resource.persisted? && ENV['MAILCHIMP_API_KEY']
-      MailchimpSubscription.create(
-        email: resource.email,
-        username: resource.username,
-        signup_date: resource.created_at
-      )
-    end
+    return unless resource.persisted? && production?
+
+    MailingListJob.perform_async(resource.id)
+  end
+
+  def send_welcome_email
+    return if ENV['STAGING'] && !resource.persisted?
+
+    WelcomeEmailJob.perform_async(resource.id)
+  end
+
+  def production?
+    Rails.env.production? && !ENV['STAGING'].present?
   end
 end

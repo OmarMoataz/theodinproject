@@ -1,4 +1,4 @@
-class CreateActiveAdminComments < ActiveRecord::Migration::Current
+class CreateActiveAdminComments < ActiveRecord::Migration[5.0]::Current
   def self.up
     create_table :active_admin_comments do |t|
       t.string :namespace
@@ -7,8 +7,8 @@ class CreateActiveAdminComments < ActiveRecord::Migration::Current
       t.references :author, polymorphic: true
       t.timestamps
     end
-    add_index :active_admin_comments, [:namespace]
 
+    add_index :active_admin_comments, [:namespace]
   end
 
   def self.down

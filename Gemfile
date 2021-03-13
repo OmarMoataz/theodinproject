@@ -1,60 +1,71 @@
 source 'https://rubygems.org'
-ruby '2.5'
+ruby '~> 2.6'
 
-gem 'rails',                        '~> 5.0.7.1'
-gem 'puma',                         '~> 3.11.2'
-gem 'turbolinks'
-gem 'jquery-rails',                 '~> 4.2.1'
-gem 'devise',                       '~> 4.4.0' # Managing environment variables
-gem 'rack-timeout',                 '~> 0.4'
-gem 'kaminari',                     '~> 1.0', '>= 1.0.1'
-gem 'pg',                           '~> 0.19'
-gem 'premailer-rails',              '~> 1.9'
-gem 'github_api',                   '~> 0.14' # to pull in the curriculum files
-gem 'octokit',                      '~> 4.6'
-gem 'omniauth-github',              '~> 1.1.2' #for Github Authentication
-gem 'omniauth-google-oauth2',       '~> 0.5.1' #for Google Authentication
-gem 'font-awesome-rails',           '~> 4.7'
-gem 'bootstrap',                    '~> 4.1.2'
-gem 'uglifier',                    '~> 3.0'
-gem 'friendly_id',                  '~> 5.1'
-gem 'cancancan',                    '~> 1.15'
-gem 'sass-rails',                   '~> 5.0'
-gem 'rack-attack'
-gem 'acts_as_votable'
-gem 'kramdown'
-gem 'toastr-rails'
-gem 'gibbon',                       '~> 3.2.0' # for Mailchimp
-gem 'nokogiri',                     '~> 1.8', '>= 1.8.4'
-gem 'sprockets',                    '~> 3.7.2'
-gem 'skylight'
-gem 'newrelic_rpm',               '~> 3.17'
+gem 'rails', '6.1.3'
+
 gem 'activeadmin'
+gem 'activeadmin_addons', '~> 1.7.1'
+gem 'active_material'
+gem 'acts_as_votable'
+gem 'bootstrap', '>= 4.4.1'
+gem 'cancancan'
+gem 'devise', '>= 4.7.1'
+gem 'discordrb-webhooks'
+gem 'friendly_id', '~> 5.4'
+gem 'gibbon', '~> 3.3.4'
+gem 'github_api', '~> 0.19'
+gem 'github_webhook', '~> 1.1.2'
+gem 'jquery-rails', '~> 4.4.0'
+gem 'kaminari', '~> 1.2'
+gem 'kramdown'
+gem 'newrelic_rpm'
+gem 'nokogiri', '~> 1.11.1'
+gem 'noticed', '~> 1.2'
+gem 'octokit', '~> 4.20'
+gem 'omniauth-github'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+gem 'pg', '~> 1.2'
+gem 'premailer-rails', '~> 1.11'
+gem 'puma'
+gem 'rack-attack'
+gem 'react-rails'
+gem 'sass-rails', '~> 6.0'
+gem 'sidekiq'
+gem 'sprockets', '~> 3.7.2'
+gem 'turbolinks'
+gem 'uglifier', '~> 4.2'
+gem 'webpacker'
 
 group :production do
-  gem 'rails_12factor',             '~> 0.0.3'
+  gem 'rails_12factor', '~> 0.0.3'
+  # gem 'skylight', '~> 5.0.0.beta5'
 end
 
-group :development, :test do
-  gem 'rspec-rails',                       '~> 3.5'
-  gem 'simplecov', :require => false
-  gem 'factory_bot_rails',                '~> 4.11'
-  gem 'database_cleaner',                  '~> 1.5'
-  gem 'webmock',                           '~> 2.1'
-  gem 'vcr',                               '~> 3.0'
-  gem 'shoulda-matchers',                  '~> 3.1'
-  gem 'rake',                              '~> 11.3'
-  gem 'rails-controller-testing',          '~> 1.0'
+group :development, :test, :docker do
+  gem 'climate_control'
   gem 'dotenv-rails'
-  gem 'bundle-audit'
+  gem 'factory_bot'
+  gem 'factory_bot_rails', '~> 6'
+  gem 'pry', '~> 0.14.0'
+  gem 'rails-controller-testing'
+  gem 'rake', '~> 13.0'
+  gem 'rspec-rails'
+  gem 'shoulda-matchers'
+  gem 'simplecov', require: false
+  gem 'timecop'
+  gem 'vcr', '~> 6.0'
+  gem 'webmock', '~> 3.12'
 end
 
-group :development do
-  gem 'web-console',                       '~> 3.4'
-  gem 'better_errors',                     '~> 2.4'  # gives much better error messages for debug
-  gem 'binding_of_caller',                 '~> 0.8'  # helps out better_errors by giving you an interactive way to query variables and methods on the better_errors error screen
-  gem 'letter_opener',                     '~> 1.4'  # shows outgoing emails in your browser instead
-  gem 'derailed'                                     # Memory benchmarking
-  gem 'reek'                                         # Code smell detector
-  gem 'rubocop', require: false                      # Static code analyser
+group :development, :docker do
+  gem 'better_errors'
+  gem 'binding_of_caller', '~> 1.0'
+  gem 'derailed'
+  gem 'letter_opener', '~> 1.4'
+  gem 'listen'
+  gem 'reek'
+  gem 'rubocop', require: false
+  gem 'rubocop-performance', require: false
+  gem 'web-console'
 end

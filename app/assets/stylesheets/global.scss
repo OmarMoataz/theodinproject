@@ -1,7 +1,6 @@
 html {
   height: 100%;
   font-size: 100%;
-  overflow-x: hidden;
 }
 
 body {
@@ -108,6 +107,7 @@ ul {
 }
 
 [type="text"],
+[type="url"],
 [type="email"],
 [type="password"],
 textarea {

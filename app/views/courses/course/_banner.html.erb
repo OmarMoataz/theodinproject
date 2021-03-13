@@ -2,5 +2,8 @@
   <div class='banner__badge'>
     <%= render 'shared/course_badge', course: course, user: current_user, modifier: '' %>
   </div>
-  <h1 class="banner__title"><%= course.title %></h1>
+
+  <%= link_to course, class: 'course-card-header__link' do %>
+    <h1 class="banner__title"><%= course.title %></h1>
+  <% end %>
 </div>

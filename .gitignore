@@ -45,7 +45,7 @@
 # Ignore application configuration
 /config/application.yml
 /config/database.yml
-.env.local
+.env*
 
 # secret token
 .secret
@@ -71,3 +71,10 @@ pickle-email-*.html
 # Versioning
 .rvmrc
 .tool-versions
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity

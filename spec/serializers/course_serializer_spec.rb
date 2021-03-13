@@ -6,7 +6,7 @@ RSpec.describe CourseSerializer do
   let(:course) do
     double(
       'Section',
-      title: 'Web Development 101',
+      title: 'Foundations',
       sections: sections,
     )
   end
@@ -25,14 +25,15 @@ RSpec.describe CourseSerializer do
   describe '#as_json' do
     let(:serialized_course) do
       {
-        title: 'Web Development 101',
+        title: 'Foundations',
         sections: [serialized_section],
       }
     end
 
     before do
-      allow(SectionSerializer).to receive(:as_json).
-        with(section, between_dates).and_return(serialized_section)
+      allow(SectionSerializer).to receive(:as_json)
+        .with(section, between_dates)
+        .and_return(serialized_section)
     end
 
     it { is_expected.to eql(serialized_course) }

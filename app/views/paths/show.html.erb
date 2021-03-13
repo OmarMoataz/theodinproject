@@ -1,0 +1,23 @@
+<div class="container">
+  <h1 class="text-center camel light curriculum-title"><%= @path.title %></h1>
+  <% if user_signed_in? && current_user.path != @path %>
+    <div class="switch-container">
+      <%= button_to 'Switch Path', users_paths_path(path_id: @path.id), class: 'button button--secondary card-main__button', remote: false, method: :post, data: { disable_with: 'Switching...' } %>
+    </div>
+  <% end %>
+  <p class="text-center path-description push-down-2x"><%= @path.description %></p>
+
+  <% @courses.each do |course| %>
+    <%= render 'courses/course_card', course: course %>
+  <% end %>
+
+  <% unless user_signed_in? %>
+    <p class="text-center path-description">
+      <%= render 'shared/bottom_cta',
+        button: sign_in_or_view_curriculum_button,
+        heading: 'Start learning for free now!',
+        sub_heading: ''
+      %>
+    </p>
+  <% end %>
+</div>

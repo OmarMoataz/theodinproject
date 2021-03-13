@@ -1,134 +1,145 @@
 require 'rails_helper'
 
 RSpec.describe User do
-  subject(:user) {
-    User.new(
-      username: 'kevin',
-      email: 'kevin@example.com',
-      password: 'foobar',
-      provider: provider,
-      uid: '',
-      avatar: avatar
-    )
-  }
-  let(:provider) { '' }
-  let(:avatar) { 'http://github.com/fake-avatar' }
+  subject(:user) { create(:user) }
 
-  let(:lesson_completions) {
-    [first_lesson_completion, second_lesson_completion]
-  }
+  it { is_expected.to validate_uniqueness_of(:email).ignoring_case_sensitivity }
+  it { is_expected.to allow_value('example@email.com').for(:email) }
+  it { is_expected.to_not allow_value('bademail').for(:email) }
+  it { is_expected.to validate_length_of(:username).is_at_least(2).is_at_most(100) }
+  it { is_expected.to validate_length_of(:learning_goal).is_at_most(1700) }
 
-  let(:first_lesson_completion) {
-    double(
-      'LessonCompletion',
-      id: 1,
-      student_id: 1,
-      created_at: DateTime.new(2016, 11, 11),
-      lesson_id: 1
-    )
-  }
+  it { is_expected.to have_many(:lesson_completions).dependent(:destroy) }
+  it { is_expected.to have_many(:completed_lessons) }
+  it { is_expected.to have_many(:project_submissions).dependent(:destroy) }
+  it { is_expected.to have_many(:user_providers).dependent(:destroy) }
+  it { is_expected.to have_many(:flags).dependent(:destroy) }
+  it { is_expected.to have_many(:notifications) }
+  it { is_expected.to belong_to(:path) }
 
-  let(:second_lesson_completion) {
-    double(
-      'LessonCompletion',
-      id: 2,
-      student_id: 1,
-      created_at: DateTime.new(2016, 11, 8),
-      lesson_id: 2
-    )
-  }
+  context 'when user is created' do
+    let!(:default_path) { create(:path, default_path: true) }
 
-  let(:completed_lessons) { [first_lesson_completion] }
-
-  before do
-    allow(user).to receive(:lesson_completions).and_return(lesson_completions)
-    allow(user).to receive(:completed_lessons).and_return(completed_lessons)
-    allow(Lesson).to receive(:find).with(2).and_return(second_lesson_completion)
-
-    allow(lesson_completions).to receive(:order).with(created_at: :asc)
-      .and_return(lesson_completions)
+    it 'enrolls the user in the default path' do
+      user = create(:user)
+      expect(user.path).to eql(default_path)
+    end
   end
 
-  it { is_expected.to validate_length_of(:username).is_at_least(2).is_at_most(40) }
-  it { is_expected.to validate_length_of(:learning_goal).is_at_most(1700) }
-  it { is_expected.to have_many(:lesson_completions) }
-  it { is_expected.to have_many(:completed_lessons) }
-
-  describe '#has_completed?' do
-    let(:exists?) { true }
+  describe '#progress_for' do
+    let(:course) { build_stubbed(:course) }
+    let(:course_progress) { instance_double(CourseProgress) }
 
     before do
-      allow(completed_lessons).to receive(:exists?).and_return(exists?)
+      allow(CourseProgress).to receive(:new).and_return(course_progress)
     end
 
-    it 'returns true' do
-      expect(user.has_completed?(first_lesson_completion)).to eql(true)
+    it 'returns the course progress service' do
+      expect(user.progress_for(course)).to eql(course_progress)
+    end
+  end
+
+  describe '#completed?' do
+    let(:lesson) { create(:lesson) }
+
+    context 'when the user has completed  the lesson' do
+      let!(:lesson_completion) { create(:lesson_completion, lesson: lesson, student: user) }
+
+      it 'returns true' do
+        expect(user.completed?(lesson)).to be(true)
+      end
     end
 
-    context 'when the passed in lesson hasnt been completed' do
-      let(:exists?) { false }
-
+    context 'when the user has not completed the lesson' do
       it 'returns false' do
-        expect(user.has_completed?(second_lesson_completion)).to eql(false)
+        expect(user.completed?(lesson)).to be(false)
       end
     end
   end
 
   describe '#latest_completed_lesson' do
-    it 'returns the latest completed lesson' do
-      expect(user.latest_completed_lesson).to eql(second_lesson_completion)
+    let(:lesson_completed_last_week) { create(:lesson) }
+    let(:lesson_completed_yesterday) { create(:lesson) }
+    let(:lesson_completed_today) { create(:lesson) }
+
+    context 'when the user has completed any lessons' do
+      before do
+        create(
+          :lesson_completion,
+          lesson: lesson_completed_last_week,
+          student: user,
+          created_at: Time.zone.today - 7.days
+        )
+
+        create(
+          :lesson_completion,
+          lesson: lesson_completed_yesterday,
+          student: user,
+          created_at: Time.zone.today - 1.day
+        )
+
+        create(
+          :lesson_completion,
+          lesson: lesson_completed_today,
+          student: user,
+          created_at: Time.zone.today
+        )
+      end
+
+      it 'returns the latest completed lesson' do
+        expect(user.latest_completed_lesson).to eql(lesson_completed_today)
+      end
     end
 
     context 'when the user does not have any completed lessons' do
-      let(:lesson_completions) { [] }
-
       it 'returns nil' do
-        expect(user.latest_completed_lesson).to eql(nil)
+        expect(user.latest_completed_lesson).to be(nil)
       end
     end
   end
 
-  describe '#latest_completion_time' do
-    let(:lesson) { double('Lesson', id: 1) }
+  describe '#active_for_authentication?' do
+    context 'when user has not been banned' do
+      let(:user) { create(:user) }
 
-    before do
-      allow(lesson_completions).to receive(:find_by).with(lesson_id: 1)
-        .and_return(first_lesson_completion)
+      it 'returns true' do
+        expect(user.active_for_authentication?).to be(true)
+      end
     end
 
-    it 'returns the time of the latest completed lesson' do
-      expect(user.lesson_completion_time(lesson))
-        .to eql(DateTime.new(2016, 11, 11))
-    end
-  end
-
-  describe '#last_lesson_completed' do
-    it 'returns the latest completed lesson for the user' do
-      expect(user.last_lesson_completed).to eql(second_lesson_completion)
-    end
-  end
-
-  describe '#update_avatar' do
-    let(:github_avatar) { 'http://github.com/fake-avatar' }
-    let(:avatar) { nil }
-
-    it 'updates the users avatar' do
-      user.update_avatar(github_avatar)
-      expect(user.avatar).to eql('http://github.com/fake-avatar')
-    end
-  end
-
-  describe '#password_required' do
-    it 'returns true' do
-      expect(user.password_required?).to eql(true)
-    end
-
-    context 'when the provider is not blank' do
-      let(:provider) { 'github' }
+    context 'when user has been banned' do
+      let(:user) { create(:user, banned: true) }
 
       it 'returns false' do
-        expect(user.password_required?).to eql(false)
+        expect(user.active_for_authentication?).to be(false)
       end
+    end
+  end
+
+  describe '#inactive_message' do
+    context 'when user has not been banned' do
+      let(:user) { create(:user) }
+
+      it 'returns default inactive translation key' do
+        expect(user.inactive_message).to eq(:inactive)
+      end
+    end
+
+    context 'when user has been banned' do
+      let(:user) { create(:user, banned: true) }
+
+      it 'returns banned translation key' do
+        expect(user.inactive_message).to eq(:banned)
+      end
+    end
+  end
+
+  describe '#dismissed_flags' do
+    let!(:non_dismissed_flag) { create(:flag, flagger: user, taken_action: :ban) }
+    let!(:dismissed_flag) { create(:flag, flagger: user, taken_action: :dismiss) }
+
+    it 'returns flags the user has made that have been dismissed' do
+      expect(user.dismissed_flags).to contain_exactly(dismissed_flag)
     end
   end
 end

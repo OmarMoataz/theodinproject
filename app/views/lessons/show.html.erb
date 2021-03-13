@@ -1,21 +1,21 @@
 <%= title(@lesson.title) %>
 
-<div class="container lesson">
+<div class="container lesson-container lesson">
   <div class="row">
     <div class="col-12">
       <div class="lesson-header">
-        <%= link_to @lesson.course, class: 'course-card-header__link' do %>
-          <%= render 'courses/course/banner', course: @lesson.course %>
-        <% end %>
+        <%= render 'courses/course/banner', course: @lesson.course %>
         <h2 class="lesson-header__title accent"><%= @lesson.title %></h2>
       </div>
     </div>
 
-    <div class="col-lg-3">
-      <div class="d-none d-lg-block d-xl-block lesson-navigation"></div>
+    <div class="col-lg-3 lesson-nav-wrapper">
+      <div>
+        <div class="d-none d-lg-block d-xl-block lesson-navigation"></div>
+      </div>
     </div>
 
-    <div class="col-lg-9">
+    <div class="col-xl-6 col-lg-8">
       <div class="lesson-content">
         <%= @lesson.content.html_safe %>
       </div>
@@ -26,28 +26,33 @@
 <div class="lesson-functions">
   <div class="container">
     <div class="card-main">
-      <h1 class="lesson-functions__title">
-        <%= @lesson.course.title %>
-      </h1>
 
-      <h3 class="lesson-functions__sub-title accent bold">
-        <%= @lesson.title %>
-      </h3>
+      <% if @lesson.accepts_submission? %>
+        <%= react_component(
+          "project-submissions/index",
+          {
+            userId: current_user&.id,
+            course: @lesson.course.as_json,
+            lesson: @lesson.as_json,
+            submissions: @project_submissions.map { |submission| ProjectSubmissionSerializer.as_json(submission, current_user) },
+            allSubmissionsPath: lesson_project_submissions_path(@lesson),
+            userSubmission: user_submission(current_user, @lesson)
+          }
+        ) %>
+      <% end %>
 
       <div class="lesson-button-group">
         <%= render 'lesson_buttons', lesson: @lesson, course: @lesson.course, user: @user %>
       </div>
-
-      <% if @projects && ProjectSubmissionFeature.enabled? %>
-        <div id="submissions">
-          <%= render 'recent_submissions',
-            projects: @projects,
-            project: @project,
-            lesson: @lesson
-          %>
-        </div>
-      <% end %>
     </div>
+
+    <%= link_to github_edit_url(@lesson),
+      target: :_blank,
+      rel: 'noreferrer noopener',
+      class: 'lesson-functions__edit-lesson-link' do %>
+      <span class="fab fa-github mr-1"></span>
+      <span> Improve this lesson on GitHub</span>
+    <% end %>
 
     <%= render 'shared/bottom_cta',
       button: chat_button,
@@ -55,20 +60,6 @@
       sub_heading: 'Chat with our friendly Odin community in our Discord chatrooms!'
     %>
 
-    <%= render 'viking-advert' %>
+    <%= render 'advert' %>
   </div>
 </div>
-
-<% if user_signed_in? %>
-  <%= render 'projects/report_form_modal', lesson: @lesson %>
-<% end %>
-
-<% if user_signed_in? && @lesson.has_submission? %>
-  <div id="project-submission-modal-wrapper">
-    <%= render 'projects/form_modal', lesson: @lesson, project: @project %>
-  </div>
-<% end %>
-
-<% if @project&.persisted? %>
-  <%= render 'projects/delete_project_modal', lesson: @lesson, project: @project %>
-<% end %>

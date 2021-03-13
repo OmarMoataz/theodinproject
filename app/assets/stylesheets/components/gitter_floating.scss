@@ -23,7 +23,7 @@
       position: relative;
       z-index: 2;
 
-      .fa.fa-comments {
+      .fas.fa-comments {
         color: $white;
         font-size: 2em;
       }
@@ -39,7 +39,7 @@
       z-index: 1;
       position: relative;
 
-      .fa {
+      .fas {
         color: $white;
         font-size: 1.2em;
       }
@@ -53,14 +53,4 @@
     opacity: 1;
     transition: margin 1s, opacity 1s;
   }
-}
-
-.gitter-chat-embed {
-  border-left: 0;
-  border-left-style: none;
-  box-shadow: -12px 0 18px 0 rgba(50,50,50,0.1);
-}
-
-.gitter-chat-embed-action-bar-item:active {
-  filter: none;
 }

@@ -11,7 +11,7 @@
                   odin!
 
 
-Our full stack curriculum is free and supported by a passionate open source community. Do you want to contribute? Chat with us at https://discord.gg/hvqVr6d
+Our full stack curriculum is free and supported by a passionate open source community. Do you want to contribute? Chat with us at https://discord.gg/V75WSQG
 -->
 
   <meta charset="utf-8">
@@ -20,6 +20,7 @@ Our full stack curriculum is free and supported by a passionate open source comm
   <meta name="description" content="The Odin Project empowers aspiring web developers to learn together">
   <meta name="keywords" content="learn web development, learn ruby on rails, ruby on rails, ruby, rails">
   <meta property="og:image" content="<%= image_url('og-logo.png') %>">
+  <%= csrf_meta_tags %>
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -29,9 +30,12 @@ Our full stack curriculum is free and supported by a passionate open source comm
   <title>
     <%= content_for(:title) || 'Your Career in Web Development Starts Here | The Odin Project' %>
   </title>
-  <%= csrf_meta_tags %>
 
-  <%= stylesheet_link_tag 'application', media: 'all'%>
+  <%= stylesheet_link_tag 'application_stylesheet', media: 'all' %>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700,300italic|Open+Sans:300,300italic,400,700' rel='stylesheet' type='text/css'>
-  <%= javascript_include_tag 'application' %>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+  <%= stylesheet_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'application' %>
+  <%= csrf_meta_tags %>
 </head>
