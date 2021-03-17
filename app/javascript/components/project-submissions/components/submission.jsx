@@ -49,6 +49,7 @@ const Submission = forwardRef(({
               role="button"
               tabIndex={0}
               aria-label="edit-button"
+              data-testid="edit-button"
             />
           )
           : (
@@ -56,6 +57,7 @@ const Submission = forwardRef(({
               className="link-button submissions__flag hint--top"
               aria-label="Report submission"
               type="button"
+              data-testid="report-button"
               onClick={(e) => { e.preventDefault(); onFlag(submission); }}
             >
               <i className="fas fa-flag" />
