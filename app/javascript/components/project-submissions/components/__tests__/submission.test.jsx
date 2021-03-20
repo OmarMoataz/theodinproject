@@ -4,22 +4,22 @@ import { render } from '@testing-library/react';
 import ProjectSubmissionContext from '../../ProjectSubmissionContext';
 import Submission from '../submission';
 
-const constructSubmission = (userId) => ({
+const constructSubmission = (submissionInfo) => ({
   user_name: 'Example User',
   repo_url: 'http://example.com/repo',
-  live_preview_url: 'http://example.com/live',
+  live_preview_url: submissionInfo.live_preview_url || '',
   is_public: true,
-  lesson_has_live_preview: true,
-  user_id: userId || 1,
+  lesson_has_live_preview: submissionInfo.lesson_has_live_preview || false,
+  user_id: submissionInfo.userId || 1,
 });
 
-const renderSubmissionComponentWithSubmissionContext = (userId) => render(
+const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo = {}) => render(
   <ProjectSubmissionContext.Provider value={{
     userId,
   }}
   >
     <Submission
-      submission={constructSubmission()}
+      submission={constructSubmission(submissionInfo)}
       handleUpdate={() => {}}
       handleDelete={() => {}}
       handleLikeToggle={() => {}}
@@ -61,5 +61,42 @@ describe('Submission: Different User', () => {
   test('Should render report button', () => {
     const reportButton = queryByTestId('report-button');
     expect(reportButton).toBeInTheDocument();
+  });
+});
+
+describe('Submission: Live Preview', () => {
+  let queryByText;
+
+  test('Should render live preivew', () => {
+    ({ queryByText } = renderSubmissionComponentWithSubmissionContext(null, {
+      live_preview_url: 'https://google.com',
+    }));
+
+    const livePreivewLink = queryByText('Live Preview');
+    expect(livePreivewLink).toBeInTheDocument();
+    expect(livePreivewLink).toHaveAttribute('target', '_blank');
+  });
+
+  test('Should not render live preivew', () => {
+    ({ queryByText } = renderSubmissionComponentWithSubmissionContext(null, {
+      userId: 2,
+      // this is sent for the readability of the test even though it's unnecessary.
+      live_preview_url: '',
+    }));
+
+    const livePreviewLink = queryByText('Live Preview');
+    expect(livePreviewLink).not.toBeInTheDocument();
+  });
+});
+
+describe('Submission: View Code', () => {
+  let queryByText;
+
+  test('should render view code link', () => {
+    ({ queryByText } = renderSubmissionComponentWithSubmissionContext());
+
+    const viewCodeLink = queryByText('View Code');
+    expect(viewCodeLink).toBeInTheDocument();
+    expect(viewCodeLink).toHaveAttribute('target', '_blank');
   });
 });
