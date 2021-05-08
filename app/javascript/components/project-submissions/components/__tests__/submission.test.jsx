@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent, logDOM } from '@testing-library/react';
 
 import ProjectSubmissionContext from '../../ProjectSubmissionContext';
 import Submission from '../submission';
@@ -20,9 +20,9 @@ const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo =
   >
     <Submission
       submission={constructSubmission(submissionInfo)}
-      handleUpdate={() => {}}
-      handleDelete={() => {}}
-      handleLikeToggle={() => {}}
+      handleUpdate={() => jest.fn()}
+      handleDelete={() => jest.fn()}
+      handleLikeToggle={() => jest.fn()}
     />
     ,
   </ProjectSubmissionContext.Provider>,
@@ -35,9 +35,20 @@ describe('Submission: Current User', () => {
     ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(1));
   });
 
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   test('should render edit button', () => {
     const editButton = queryByTestId('edit-button');
     expect(editButton).toBeInTheDocument();
+  });
+
+  test('edit button should trigger edit modal', () => {
+    fireEvent.mouseDown(queryByTestId('edit-button'));
+
+    const editForm = queryByTestId('edit-form');
+    expect(editForm).toBeInTheDocument();
   });
 
   test("shouldn't render report button", () => {
@@ -53,9 +64,19 @@ describe('Submission: Different User', () => {
     ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(2));
   });
 
+  afterAll(() => {
+    jest.resetModules();
+  });
+
   test("shouldn't render edit button", () => {
     const editButton = queryByTestId('edit-button');
     expect(editButton).not.toBeInTheDocument();
+  });
+
+  test('Clicking report button should render report form', () => {
+    fireEvent.click(queryByTestId('report-button'));
+
+    expect(queryByTestId('report-form')).toBeInTheDocument();
   });
 
   test('Should render report button', () => {
@@ -66,6 +87,10 @@ describe('Submission: Different User', () => {
 
 describe('Submission: Live Preview', () => {
   let queryByText;
+
+  afterAll(() => {
+    jest.resetModules();
+  });
 
   test('Should render live preivew', () => {
     ({ queryByText } = renderSubmissionComponentWithSubmissionContext(null, {
@@ -91,6 +116,10 @@ describe('Submission: Live Preview', () => {
 
 describe('Submission: View Code', () => {
   let queryByText;
+
+  afterAll(() => {
+    jest.resetModules();
+  });
 
   test('should render view code link', () => {
     ({ queryByText } = renderSubmissionComponentWithSubmissionContext());
