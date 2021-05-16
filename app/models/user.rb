@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   acts_as_voter
-  after_create :enroll_in_foundations
+  before_create :enroll_in_foundations
 
   devise :database_authenticatable, :registerable, :recoverable,
          :rememberable, :trackable, :validatable,
@@ -10,13 +10,13 @@ class User < ApplicationRecord
   validates :username, length: { in: 2..100 }
   validates :learning_goal, length: { maximum: 1700 }
 
-  has_many :lesson_completions, foreign_key: :student_id, dependent: :destroy
+  has_many :lesson_completions, dependent: :destroy
   has_many :completed_lessons, through: :lesson_completions, source: :lesson
   has_many :project_submissions, dependent: :destroy
   has_many :user_providers, dependent: :destroy
   has_many :flags, foreign_key: :flagger_id, dependent: :destroy
   has_many :notifications, as: :recipient
-  belongs_to :path
+  belongs_to :path, optional: true
 
   def progress_for(course)
     @progress ||= Hash.new { |hash, c| hash[c] = CourseProgress.new(c, self) }
@@ -33,12 +33,16 @@ class User < ApplicationRecord
     Lesson.find(last_lesson_completed.lesson_id)
   end
 
+  def lesson_completions_for_course(course)
+    lesson_completions.where(course_id: course.id)
+  end
+
   def active_for_authentication?
     super && !banned?
   end
 
   def inactive_message
-    !banned? ? super : :banned
+    banned? ? :banned : super
   end
 
   def dismissed_flags
@@ -54,6 +58,6 @@ class User < ApplicationRecord
   def enroll_in_foundations
     default_path = Path.default_path
 
-    update(path_id: default_path.id) if default_path.present?
+    self.path_id = default_path.id if default_path.present?
   end
 end

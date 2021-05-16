@@ -1,19 +1,18 @@
 class Lesson < ApplicationRecord
   extend FriendlyId
 
-  friendly_id :slug_candidates, use: %i[slugged history finders]
+  friendly_id :slug_candidates, use: %i[scoped slugged history finders], scope: :section
 
   belongs_to :section
   has_one :course, through: :section
+  has_one :path, through: :course
   has_many :project_submissions
   has_many :lesson_completions
-  has_many :completing_users, through: :lesson_completions, source: :student
+  has_many :completing_users, through: :lesson_completions, source: :user
+
+  scope :most_recent_updated_at, -> { maximum(:updated_at) }
 
   validates :position, presence: true
-
-  def type
-    is_project? ? 'Project' : 'Lesson'
-  end
 
   def position_in_section
     section_lessons.where('position <= ?', position).count

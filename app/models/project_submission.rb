@@ -1,4 +1,7 @@
 class ProjectSubmission < ApplicationRecord
+  include Discard::Model
+  default_scope -> { kept }
+
   acts_as_votable
 
   paginates_per 15
