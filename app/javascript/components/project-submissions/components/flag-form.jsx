@@ -32,7 +32,7 @@ const FlagForm = ({ onSubmit, submission, userId }) => {
   }
 
   return (
-    <div data-testid="report-form">
+    <div>
       <h1 className="text-center accent">Flag Submission</h1>
 
       <form className="form" onSubmit={handleSubmit(onSubmit)}>
