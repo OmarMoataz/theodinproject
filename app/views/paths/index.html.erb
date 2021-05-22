@@ -1,6 +1,6 @@
 <div class="paths curriculum-background">
   <div class="container">
-    <h1 class="text-center camel card-list__title">Learning Paths</h1>
+    <h1 class="text-center camel card-list__title">All Paths</h1>
     <% @paths.each do |path| %>
       <% if path.title === 'Foundations' %>
         <div class='card-main card-main--clickable'>
@@ -13,7 +13,7 @@
             <% if current_user.nil? %>
               <%= button_to 'View Path', path_url(path), method: :get, class: 'button button--secondary card-main__button' %>
             <% elsif current_user.path === path %>
-              <%= button_to 'Resume', path_url(path), method: :get, class: 'button button--primary card-main__button' %>
+              <%= button_to 'Resume', path_url(path), method: :get, class: 'button button--primary card-main__button', data: { test_id: "#{path.title.downcase}-resume-path-btn"  } %>
             <% else %>
               <%= button_to 'Switch', users_paths_path(path_id: path.id), class: 'button button--secondary card-main__button', remote: false, method: :post, data: { disable_with: 'Switching...' } %>
             <% end %>
@@ -44,7 +44,7 @@
               <% elsif current_user.path === path %>
                 <%= button_to 'Resume', path_url(path), method: :get, class: 'button button--primary card-main__button' %>
               <% else %>
-                <%= button_to 'Switch', users_paths_path(path_id: path.id), class: 'button button--secondary card-main__button', remote: false, method: :post, data: { disable_with: 'Switching...' } %>
+                <%= button_to 'Switch', users_paths_path(path_id: path.id), class: 'button button--secondary card-main__button', remote: false, method: :post, data: { disable_with: 'Switching...', test_id: "#{path.title.downcase}-switch-path-btn" } %>
               <% end %>
             </div>
             <div class="card-main__description">
@@ -61,4 +61,3 @@
     </div>
   </div>
 </div>
-

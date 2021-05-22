@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, logDOM } from '@testing-library/react';
+import { render, fireEvent, getByText } from '@testing-library/react';
 
 import ProjectSubmissionContext from '../../ProjectSubmissionContext';
 import Submission from '../submission';
@@ -13,16 +13,17 @@ const constructSubmission = (submissionInfo) => ({
   user_id: submissionInfo.userId || 1,
 });
 
-const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo = {}) => render(
+const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo = {}, customFns = {}) => render(
   <ProjectSubmissionContext.Provider value={{
     userId,
   }}
   >
     <Submission
       submission={constructSubmission(submissionInfo)}
-      handleUpdate={() => jest.fn()}
-      handleDelete={() => jest.fn()}
-      handleLikeToggle={() => jest.fn()}
+      handleUpdate={customFns.handleUpdate || jest.fn()}
+      onFlag={customFns.onFlag || jest.fn()}
+      handleDelete={customFns.handleDelete || jest.fn()}
+      handleLikeToggle={customFns.handleLikeToggle || jest.fn()}
     />
     ,
   </ProjectSubmissionContext.Provider>,
@@ -30,9 +31,10 @@ const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo =
 
 describe('Submission: Current User', () => {
   let queryByTestId;
+  let queryByText;
 
   beforeEach(() => {
-    ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(1));
+    ({ queryByTestId, queryByText } = renderSubmissionComponentWithSubmissionContext(1));
   });
 
   afterAll(() => {
@@ -40,19 +42,19 @@ describe('Submission: Current User', () => {
   });
 
   test('should render edit button', () => {
-    const editButton = queryByTestId('edit-button');
+    const editButton = queryByTestId('edit-submission-btn');
     expect(editButton).toBeInTheDocument();
   });
 
   test('edit button should trigger edit modal', () => {
-    fireEvent.mouseDown(queryByTestId('edit-button'));
+    fireEvent.mouseDown(queryByTestId('edit-submission-btn'));
 
-    const editForm = queryByTestId('edit-form');
+    const editForm = queryByText('Edit Your Project');
     expect(editForm).toBeInTheDocument();
   });
 
   test("shouldn't render report button", () => {
-    const reportButton = queryByTestId('report-button');
+    const reportButton = queryByTestId('flag-btn');
     expect(reportButton).not.toBeInTheDocument();
   });
 });
@@ -69,19 +71,28 @@ describe('Submission: Different User', () => {
   });
 
   test("shouldn't render edit button", () => {
-    const editButton = queryByTestId('edit-button');
+    const editButton = queryByTestId('edit-submission-btn');
     expect(editButton).not.toBeInTheDocument();
   });
 
-  test('Clicking report button should render report form', () => {
-    fireEvent.click(queryByTestId('report-button'));
-
-    expect(queryByTestId('report-form')).toBeInTheDocument();
-  });
-
   test('Should render report button', () => {
-    const reportButton = queryByTestId('report-button');
+    const reportButton = queryByTestId('flag-btn');
     expect(reportButton).toBeInTheDocument();
+  });
+});
+
+describe('Submission: Report Different User Submission', () => {
+  test('Should fire onFlag handler', () => {
+    let queryByTestId;
+
+    const onFlag = jest.fn();
+    ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(2, {
+      live_preview_url: 'https://google.com',
+    }, { onFlag }));
+
+    fireEvent.click(queryByTestId('flag-btn'));
+
+    expect(onFlag).toHaveBeenCalledTimes(1);
   });
 });
 

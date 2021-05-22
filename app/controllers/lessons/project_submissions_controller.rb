@@ -17,13 +17,16 @@ module Lessons
     end
 
     def set_lesson
-      @lesson = Lesson.friendly.find(params[:lesson_id])
+      @lesson = Lesson.find(params[:lesson_id])
     end
 
     def check_if_project_submitable
       return if @lesson.accepts_submission?
 
-      redirect_to lesson_path(@lesson), alert: 'That project does not accept submissions'
+      redirect_to(
+        path_course_lesson_url(@lesson.course.path, @lesson.course, @lesson),
+        alert: 'That project does not accept submissions'
+      )
     end
   end
 end
