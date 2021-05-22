@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, getByText } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 
 import ProjectSubmissionContext from '../../ProjectSubmissionContext';
 import Submission from '../submission';
@@ -13,7 +13,7 @@ const constructSubmission = (submissionInfo) => ({
   user_id: submissionInfo.userId || 1,
 });
 
-const renderSubmissionComponentWithSubmissionContext = (userId, submissionInfo = {}, customFns = {}) => render(
+const renderSubmissionComponent = (userId, submissionInfo = {}, customFns = {}) => render(
   <ProjectSubmissionContext.Provider value={{
     userId,
   }}
@@ -34,7 +34,7 @@ describe('Submission: Current User', () => {
   let queryByText;
 
   beforeEach(() => {
-    ({ queryByTestId, queryByText } = renderSubmissionComponentWithSubmissionContext(1));
+    ({ queryByTestId, queryByText } = renderSubmissionComponent(1));
   });
 
   afterAll(() => {
@@ -63,7 +63,7 @@ describe('Submission: Different User', () => {
   let queryByTestId;
 
   beforeEach(() => {
-    ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(2));
+    ({ queryByTestId } = renderSubmissionComponent(2));
   });
 
   afterAll(() => {
@@ -83,12 +83,11 @@ describe('Submission: Different User', () => {
 
 describe('Submission: Report Different User Submission', () => {
   test('Should fire onFlag handler', () => {
-    let queryByTestId;
-
     const onFlag = jest.fn();
-    ({ queryByTestId } = renderSubmissionComponentWithSubmissionContext(2, {
+    const testingHelpers = renderSubmissionComponent(2, {
       live_preview_url: 'https://google.com',
-    }, { onFlag }));
+    }, { onFlag });
+    const { queryByTestId } = testingHelpers;
 
     fireEvent.click(queryByTestId('flag-btn'));
 
@@ -104,7 +103,7 @@ describe('Submission: Live Preview', () => {
   });
 
   test('Should render live preivew', () => {
-    ({ queryByText } = renderSubmissionComponentWithSubmissionContext(null, {
+    ({ queryByText } = renderSubmissionComponent(null, {
       live_preview_url: 'https://google.com',
     }));
 
@@ -114,7 +113,7 @@ describe('Submission: Live Preview', () => {
   });
 
   test('Should not render live preivew', () => {
-    ({ queryByText } = renderSubmissionComponentWithSubmissionContext(null, {
+    ({ queryByText } = renderSubmissionComponent(null, {
       userId: 2,
       // this is sent for the readability of the test even though it's unnecessary.
       live_preview_url: '',
@@ -133,7 +132,7 @@ describe('Submission: View Code', () => {
   });
 
   test('should render view code link', () => {
-    ({ queryByText } = renderSubmissionComponentWithSubmissionContext());
+    ({ queryByText } = renderSubmissionComponent());
 
     const viewCodeLink = queryByText('View Code');
     expect(viewCodeLink).toBeInTheDocument();
