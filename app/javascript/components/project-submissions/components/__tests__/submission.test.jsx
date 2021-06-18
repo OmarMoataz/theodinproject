@@ -4,22 +4,22 @@ import { render, fireEvent } from '@testing-library/react';
 import ProjectSubmissionContext from '../../ProjectSubmissionContext';
 import Submission from '../submission';
 
-const constructSubmission = (submissionInfo) => ({
+const defaultSubmission = {
   user_name: 'Example User',
   repo_url: 'http://example.com/repo',
-  live_preview_url: submissionInfo.live_preview_url || '',
+  live_preview_url: 'https://google.com',
   is_public: true,
-  lesson_has_live_preview: submissionInfo.lesson_has_live_preview || false,
-  user_id: submissionInfo.userId || 1,
-});
+  lesson_has_live_preview: true,
+  user_id: 1,
+};
 
-const renderSubmissionComponent = (userId, submissionInfo = {}) => render(
+const renderSubmissionComponent = (submission, userId = 1) => render(
   <ProjectSubmissionContext.Provider value={{
     userId,
   }}
   >
     <Submission
-      submission={constructSubmission(submissionInfo)}
+      submission={submission}
       handleUpdate={jest.fn()}
       onFlag={jest.fn()}
       handleDelete={jest.fn()}
@@ -33,7 +33,7 @@ describe('Submission: Current User', () => {
   let queryByTestId;
 
   beforeEach(() => {
-    ({ queryByTestId } = renderSubmissionComponent(1));
+    ({ queryByTestId } = renderSubmissionComponent(defaultSubmission));
   });
 
   afterAll(() => {
@@ -62,7 +62,7 @@ describe('Submission: Different User', () => {
   let queryByTestId;
 
   beforeEach(() => {
-    ({ queryByTestId } = renderSubmissionComponent(2));
+    ({ queryByTestId } = renderSubmissionComponent(defaultSubmission, 2));
   });
 
   afterAll(() => {
@@ -80,7 +80,7 @@ describe('Submission: Different User', () => {
   });
 });
 
-describe('Submission: Live Preview', () => {
+describe('Submission (both cases): Live Preview', () => {
   let queryByTestId;
 
   afterAll(() => {
@@ -88,7 +88,8 @@ describe('Submission: Live Preview', () => {
   });
 
   test('Renders live preivew with valid live_preview_url', () => {
-    ({ queryByTestId } = renderSubmissionComponent(null, {
+    ({ queryByTestId } = renderSubmissionComponent({
+      ...defaultSubmission,
       live_preview_url: 'https://google.com',
     }));
 
@@ -98,9 +99,8 @@ describe('Submission: Live Preview', () => {
   });
 
   test("Doesn't render live preivew without live_preview_url", () => {
-    ({ queryByTestId } = renderSubmissionComponent(null, {
-      userId: 2,
-      // this is sent for the readability of the test even though it's unnecessary.
+    ({ queryByTestId } = renderSubmissionComponent({
+      ...defaultSubmission,
       live_preview_url: '',
     }));
 
@@ -109,7 +109,7 @@ describe('Submission: Live Preview', () => {
   });
 });
 
-describe('Submission: View Code', () => {
+describe('Submission (both cases): View Code', () => {
   let queryByTestId;
 
   afterAll(() => {
@@ -117,7 +117,7 @@ describe('Submission: View Code', () => {
   });
 
   test('Renders view code link', () => {
-    ({ queryByTestId } = renderSubmissionComponent());
+    ({ queryByTestId } = renderSubmissionComponent(defaultSubmission));
 
     const viewCodeLink = queryByTestId('view-code-btn');
     expect(viewCodeLink).toBeInTheDocument();
