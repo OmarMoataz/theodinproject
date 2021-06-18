@@ -34,7 +34,7 @@ const EditForm = ({
   }
 
   return (
-    <div data-testid="edit-form">
+    <div data-test-id="edit-form">
       <h1 className="text-center accent">Edit Your Project</h1>
 
       <form className="form" onSubmit={handleSubmit(onSubmit)}>

@@ -13,17 +13,17 @@ const constructSubmission = (submissionInfo) => ({
   user_id: submissionInfo.userId || 1,
 });
 
-const renderSubmissionComponent = (userId, submissionInfo = {}, customFns = {}) => render(
+const renderSubmissionComponent = (userId, submissionInfo = {}) => render(
   <ProjectSubmissionContext.Provider value={{
     userId,
   }}
   >
     <Submission
       submission={constructSubmission(submissionInfo)}
-      handleUpdate={customFns.handleUpdate || jest.fn()}
-      onFlag={customFns.onFlag || jest.fn()}
-      handleDelete={customFns.handleDelete || jest.fn()}
-      handleLikeToggle={customFns.handleLikeToggle || jest.fn()}
+      handleUpdate={jest.fn()}
+      onFlag={jest.fn()}
+      handleDelete={jest.fn()}
+      handleLikeToggle={jest.fn()}
     />
     ,
   </ProjectSubmissionContext.Provider>,
@@ -31,29 +31,28 @@ const renderSubmissionComponent = (userId, submissionInfo = {}, customFns = {}) 
 
 describe('Submission: Current User', () => {
   let queryByTestId;
-  let queryByText;
 
   beforeEach(() => {
-    ({ queryByTestId, queryByText } = renderSubmissionComponent(1));
+    ({ queryByTestId } = renderSubmissionComponent(1));
   });
 
   afterAll(() => {
     jest.resetModules();
   });
 
-  test('should render edit button', () => {
+  test('Renders edit button', () => {
     const editButton = queryByTestId('edit-submission-btn');
     expect(editButton).toBeInTheDocument();
   });
 
-  test('edit button should trigger edit modal', () => {
+  test('Displays edit modal when edit button is clicked.', () => {
     fireEvent.mouseDown(queryByTestId('edit-submission-btn'));
 
-    const editForm = queryByText('Edit Your Project');
+    const editForm = queryByTestId('edit-form');
     expect(editForm).toBeInTheDocument();
   });
 
-  test("shouldn't render report button", () => {
+  test("Doesn't render report button", () => {
     const reportButton = queryByTestId('flag-btn');
     expect(reportButton).not.toBeInTheDocument();
   });
@@ -70,71 +69,57 @@ describe('Submission: Different User', () => {
     jest.resetModules();
   });
 
-  test("shouldn't render edit button", () => {
+  test('Renders edit button', () => {
     const editButton = queryByTestId('edit-submission-btn');
     expect(editButton).not.toBeInTheDocument();
   });
 
-  test('Should render report button', () => {
+  test('Renders report button', () => {
     const reportButton = queryByTestId('flag-btn');
     expect(reportButton).toBeInTheDocument();
   });
 });
 
-describe('Submission: Report Different User Submission', () => {
-  test('Should fire onFlag handler', () => {
-    const onFlag = jest.fn();
-    const testingHelpers = renderSubmissionComponent(2, {
-      live_preview_url: 'https://google.com',
-    }, { onFlag });
-    const { queryByTestId } = testingHelpers;
-
-    fireEvent.click(queryByTestId('flag-btn'));
-
-    expect(onFlag).toHaveBeenCalledTimes(1);
-  });
-});
-
 describe('Submission: Live Preview', () => {
-  let queryByText;
+  let queryByTestId;
 
   afterAll(() => {
     jest.resetModules();
   });
 
-  test('Should render live preivew', () => {
-    ({ queryByText } = renderSubmissionComponent(null, {
+  test('Renders live preivew with valid live_preview_url', () => {
+    ({ queryByTestId } = renderSubmissionComponent(null, {
       live_preview_url: 'https://google.com',
     }));
 
-    const livePreivewLink = queryByText('Live Preview');
+    const livePreivewLink = queryByTestId('live-preview-btn');
     expect(livePreivewLink).toBeInTheDocument();
     expect(livePreivewLink).toHaveAttribute('target', '_blank');
   });
 
-  test('Should not render live preivew', () => {
-    ({ queryByText } = renderSubmissionComponent(null, {
+  test("Doesn't render live preivew without live_preview_url", () => {
+    ({ queryByTestId } = renderSubmissionComponent(null, {
       userId: 2,
       // this is sent for the readability of the test even though it's unnecessary.
       live_preview_url: '',
     }));
 
-    const livePreviewLink = queryByText('Live Preview');
+    const livePreviewLink = queryByTestId('live-preview-btn');
     expect(livePreviewLink).not.toBeInTheDocument();
   });
 });
 
 describe('Submission: View Code', () => {
-  let queryByText;
+  let queryByTestId;
 
   afterAll(() => {
     jest.resetModules();
   });
 
-  test('should render view code link', () => {
-    ({ queryByText } = renderSubmissionComponent());
+  test('Renders view code link', () => {
+    ({ queryByTestId } = renderSubmissionComponent());
 
-    const viewCodeLink = queryByText('View Code');
+    const viewCodeLink = queryByTestId('view-code-btn');
     expect(viewCodeLink).toBeInTheDocument();
     expect(viewCodeLink).toHaveAttribute('target', '_blank');
   });
